@@ -1,122 +1,46 @@
-# Pi Extension Template
+# Pi Short Links
 
-[![Join dotfield.xyz on Discord](https://img.shields.io/badge/Join%20dotfield.xyz%20on%20Discord-5865F2?logo=discord&logoColor=white)](https://discord.gg/4945dXZVW5)
+Shorten long URLs and absolute file paths in Pi assistant output so clickable links fit the terminal pane.
 
-[![CI](https://github.com/eiei114/pi-extension-template/actions/workflows/ci.yml/badge.svg)](https://github.com/eiei114/pi-extension-template/actions/workflows/ci.yml)
-[![Publish](https://github.com/eiei114/pi-extension-template/actions/workflows/publish.yml/badge.svg)](https://github.com/eiei114/pi-extension-template/actions/workflows/publish.yml)
-[![npm version](https://img.shields.io/npm/v/create-pi-extension.svg)](https://www.npmjs.com/package/create-pi-extension)
-[![npm downloads](https://img.shields.io/npm/dm/create-pi-extension.svg)](https://www.npmjs.com/package/create-pi-extension)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Pi package](https://img.shields.io/badge/pi-package-purple.svg)](https://pi.dev/packages)
-[![Trusted Publishing](https://img.shields.io/badge/npm-Trusted%20Publishing-blue.svg)](docs/release.md)
-<a href="https://buymeacoffee.com/ekawano114m"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="217" height="60"></a>
+## Why
 
-> Template for building Pi packages with extensions, Agent Skills, prompts, and themes.
+Long bare URLs wrap across lines. Terminals that only detect text URLs (or terminals Pi does not yet mark as OSC 8-capable) open only the first wrapped line. This package:
 
-## What this is
-
-This repository is the **template source** for new Pi extension OSS projects. The published npm package is [`create-pi-extension`](https://www.npmjs.com/package/create-pi-extension) (the scaffold CLI). The repository root is **not** published to npm.
-
-`create-pi-extension` is live on npm — use `bunx create-pi-extension@latest` to scaffold a new project.
-
-## Features
-
-- Interactive `create-pi-extension` CLI for scoped and unscoped package names.
-- TypeScript-first examples for extensions, Agent Skills, prompts, themes, tools, and TUI components.
-- GitHub Actions CI, npm Trusted Publishing, security policy, issue templates, and release automation.
-- Canonical public README with standard badges, install paths, quick start, package contents, and security guidance.
-- Canonical scaffold README shared by CLI-first generation and the GitHub Template setup checklist.
+1. Forces OSC 8 hyperlinks when `FORCE_HYPERLINK=1` or `TERM_PROGRAM=Orca`
+2. Rewrites assistant text that exceeds the pane width into short markdown links (`[host/…tail](full-url)`, `[~/dir/…/file](file://…)`)
+3. Leaves fenced code blocks untouched
 
 ## Install
 
-Create a new Pi extension package with the published CLI:
-
 ```bash
-bunx create-pi-extension@latest my-pi-package
+pi install npm:pi-short-links
+# or local dogfood
+pi install /path/to/pi-short-links
 ```
 
-## Quick start
+Add to project `.pi/settings.json` `packages`:
 
-### Primary path (recommended)
-
-Scaffold a new project with the published CLI:
-
-```bash
-bunx create-pi-extension@latest my-pi-package
+```json
+"../../OSS/pi-short-links"
 ```
 
-The CLI copies the bundled template, replaces placeholders, removes bootstrap docs, and can run `git init` plus `bun install`. See [`docs/template-checklist.md`](docs/template-checklist.md) for the minimal follow-up checklist.
+## Features
 
-For a scoped package name:
+- Pane-width-aware shortening for bare `http(s)` URLs
+- Absolute / `~/` path shortening with `file://` targets
+- Skips content inside ` ``` ` fences
+- Does not rewrite existing markdown links' destinations
 
-```bash
-bunx create-pi-extension@latest @my-scope/my-pi-tool
-```
+## Non-goals
 
-### Secondary path: GitHub Template
-
-Create a repository from this template when you prefer GitHub-first onboarding:
-
-```bash
-gh repo create OWNER/my-pi-package \
-  --template eiei114/pi-extension-template \
-  --clone
-```
-
-Then follow the **Secondary path** section in [`docs/template-checklist.md`](docs/template-checklist.md) for manual placeholder replacement, metadata, and post-generation cleanup.
-That checklist first copies `scaffold/package-readme.md` to `README.md`, giving GitHub Template users the same standard badges and README structure as CLI-generated packages.
-
-## Legacy npm package
-
-Do **not** use `pi install npm:pi-extension-template` as the main onboarding path. That legacy [`pi-extension-template`](https://www.npmjs.com/package/pi-extension-template) npm package predates the scaffold CLI and is not maintained as the onboarding artifact. Use **`create-pi-extension`** to scaffold a new project instead. After you publish your own extension, install it with `pi install npm:YOUR_PACKAGE_NAME` as documented in that project's README.
-
-## Package contents
-
-| Path | Purpose |
-|---|---|
-| Repository root | Template source (not published to npm) |
-| `packages/create-pi-extension/` | Published scaffold CLI |
-| `scaffold/` | Generated-package README source synced into the bundled template |
-| `docs/` | Maintainer docs and template bootstrap guides |
+- Orca-specific wrap-join fixes
+- Public URL shorteners
+- Rewriting tool-result bodies (assistant text only in v0.1)
 
 ## Development
 
 ```bash
 npm install
-npm run ci
+npm test
+npm run typecheck
 ```
-
-`npm run ci` runs typecheck, `sync:template`, CLI scaffold tests, a `create-pi-extension` pack check, and template sync assertions.
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/template-sync.md`](docs/template-sync.md).
-
-## Release
-
-Releases publish **`create-pi-extension`** to npm through Trusted Publishing. The root template source is not published.
-
-See [`docs/release.md`](docs/release.md) for setup details.
-
-## Docs
-
-- [`docs/template-checklist.md`](docs/template-checklist.md) — Primary vs Secondary setup flows
-- [`docs/template-sync.md`](docs/template-sync.md) — refresh `packages/create-pi-extension/template/` before CLI publish
-- [`docs/template-sync-checklist.md`](docs/template-sync-checklist.md) — checklist for syncing and verifying the bundled template
-- [`docs/examples.md`](docs/examples.md) — extension, skill, prompt, and theme examples
-- [`docs/release.md`](docs/release.md) — Trusted Publishing and monorepo publish path
-- [`ROADMAP.md`](ROADMAP.md) — current status, priorities, and the maintenance seed backlog
-
-## Security
-
-Pi packages can execute code with your local permissions. Review extensions before installing third-party packages.
-
-For vulnerability reporting, see [`SECURITY.md`](SECURITY.md).
-
-## Links
-
-- npm (`create-pi-extension`): https://www.npmjs.com/package/create-pi-extension
-- GitHub: https://github.com/eiei114/pi-extension-template
-- Issues: https://github.com/eiei114/pi-extension-template/issues
-
-## License
-
-MIT

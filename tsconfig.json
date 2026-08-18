@@ -12,8 +12,7 @@
     "allowImportingTsExtensions": true
   },
   "include": [
-    "extensions/**/*.ts",
-    "lib/**/*.ts",
-    "tests/**/*.mjs"
+    "extensions/short-links.ts",
+    "lib/shorten.ts"
   ]
 }
