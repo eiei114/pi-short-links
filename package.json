@@ -1,6 +1,6 @@
 {
   "name": "pi-short-links",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Shorten long URLs and file paths in Pi assistant output so OSC 8 / click targets fit the pane width.",
   "type": "module",
   "license": "MIT",
@@ -31,9 +31,10 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/shorten.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "pack:check": "npm pack --dry-run",
-    "ci": "npm run typecheck && npm test && npm run pack:check"
+    "ci": "npm run typecheck && npm test && npm run publish:guard && npm run pack:check",
+    "publish:guard": "node scripts/check-no-npm-token.mjs"
   },
   "pi": {
     "extensions": [
