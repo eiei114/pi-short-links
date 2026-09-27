@@ -1,6 +1,6 @@
 {
   "name": "pi-short-links",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Shorten long URLs and file paths in Pi assistant output so OSC 8 / click targets fit the pane width.",
   "type": "module",
   "license": "MIT",

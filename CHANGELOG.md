@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 - 2026-09-27
+
+- chore: periodic patch bump after 7+ days without npm publish
+
 ## 0.2.0
 
 - Align repo with the pi-extension-template generated-package shape: canonical README, sibling-matching CI/publish/auto-release workflows, and docs cleanup.
@@ -9,3 +13,4 @@
 ## 0.1.0
 
 - Initial release: force OSC 8 for Orca/`FORCE_HYPERLINK`, shorten long assistant URLs and paths to pane-fitting markdown links.
+
