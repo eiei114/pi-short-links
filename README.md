@@ -83,9 +83,15 @@ Then send a message containing a long URL or absolute file path and confirm it r
 ```bash
 npm install
 npm run ci
+npm run smoke:pi
 npm pack --dry-run
 FORCE_HYPERLINK=1 pi -e .
 ```
+
+`npm run smoke:pi` launches the locally pinned Pi SDK in an isolated temporary
+agent directory, verifies the actual extension over RPC, and uses a local
+deterministic provider response (no paid inference or global Pi settings).
+CI runs this smoke as part of `npm run ci`.
 
 ## Release
 
