@@ -40,7 +40,15 @@ export function featureResponse(responses, providerRequests) {
   const text = assistantText(responses);
   const links = [...text.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)].map((match) => ({ label: match[1], href: match[2] }));
   const urlLink = links.find((link) => link.href === SMOKE_URL);
-  const pathLink = links.find((link) => link.href.startsWith("file:") && link.label.includes("file.ts"));
+  const pathLink = links.find((link) => {
+    if (!link.href.startsWith("file:") || !link.label.includes("file.ts")) return false;
+    try {
+      const target = decodeURIComponent(new URL(link.href).pathname).replace(/^\/[A-Za-z]:/, "");
+      return target === SMOKE_PATH;
+    } catch {
+      return false;
+    }
+  });
   return {
     text,
     providerRequests,

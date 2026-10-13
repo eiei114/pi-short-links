@@ -6,7 +6,7 @@ import {
 
 const status = { type: "extension_ui_request", method: "setStatus", statusKey: "pi-short-links", statusText: "short-links: OSC 8 on" };
 const assistant = { type: "message_end", message: { role: "assistant", content: [{ type: "text", text:
-  `Long URL: [example.com/…columns](${SMOKE_URL})\nLong path: [/alpha/…/file.ts](file:///alpha/beta/file.ts)` }] } };
+  `Long URL: [example.com/…columns](${SMOKE_URL})\nLong path: [/alpha/…/file.ts](file://${SMOKE_PATH})` }] } };
 const successfulHost = (responses = [status, assistant], overrides = {}) => ({
   responses, fullOutput: "", exit_code: 0, processExited: true, timedOut: false,
   providerRequests: 1, expectedVersion: "1.1.0", ...overrides,
@@ -33,6 +33,15 @@ test("feature response requires the shortened URL and path links with original t
   for (const responses of [[], [status], [status, { ...assistant, message: { ...assistant.message, content: [{ type: "text", text: `Long URL: [short](https://wrong.example/)\n${SMOKE_PATH}` }] } }]]) {
     assert.equal(behaviorAssertions("happy_path", successfulHost(responses))[0].passed, false);
   }
+  for (const target of ["file:///alpha/beta/file.ts", "file:///alpha/beta/gamma/delta/file.ts"]) {
+    const wrongTarget = { ...assistant, message: { ...assistant.message, content: [{ type: "text", text:
+      `Long URL: [example.com/…columns](${SMOKE_URL})\nLong path: [/alpha/…/file.ts](${target})` }] } };
+    assert.equal(behaviorAssertions("happy_path", successfulHost([status, wrongTarget]))[0].passed, false);
+  }
+  const encodedPath = SMOKE_PATH.replace("/alpha", "/%61lpha");
+  const windowsPath = { ...assistant, message: { ...assistant.message, content: [{ type: "text", text:
+    `Long URL: [example.com/…columns](${SMOKE_URL})\nLong path: [/alpha/…/file.ts](file:///C:${encodedPath})` }] } };
+  assert.equal(behaviorAssertions("happy_path", successfulHost([status, windowsPath]))[0].passed, true);
   assert.equal(behaviorAssertions("happy_path", successfulHost([status, assistant], { providerRequests: 0 }))[0].passed, false);
 });
 

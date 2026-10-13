@@ -1,15 +1,15 @@
 import { spawn, spawnSync } from "node:child_process";
 import { createServer } from "node:http";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, resolve } from "node:path";
+import { resolve } from "node:path";
 import {
   behaviorAssertions, EXTENSION_LOAD_ERROR_PATTERN, parseJsonLines, SDK_VERSIONS,
   UNHANDLED_ERROR_PATTERN, VERIFICATION_CONTRACT, SMOKE_RESPONSE,
 } from "./pi-sdk-smoke-contract.mjs";
+import { writeSmokeReport } from "./pi-sdk-smoke-report.mjs";
 
 const root = resolve(import.meta.dirname, "..");
-const reportPath = resolve(root, "docs/verification/pi-sdk-smoke.json");
 const PROBE_TIMEOUT_MS = 15_000;
 const CLEANUP_GRACE_MS = 1_000;
 const STATUS_EVENT = (record) => record?.type === "extension_ui_request"
@@ -269,10 +269,9 @@ try {
       || (item.name === "extension_load" && !item.assertions.every((assertion) => assertion.passed))).length,
     cases: cases.map(({ capturedOutput, ...item }) => item),
   };
-  mkdirSync(dirname(reportPath), { recursive: true });
-  writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+  const reportPath = writeSmokeReport(report, { root });
   console.log(JSON.stringify({ verification_contract: VERIFICATION_CONTRACT, platform: process.platform,
-    unhandled_errors: report.unhandled_errors, extension_load_errors: report.extension_load_errors,
+    report_path: reportPath, unhandled_errors: report.unhandled_errors, extension_load_errors: report.extension_load_errors,
     cases: cases.map(({ name, passed, exit_code }) => ({ name, passed, exit_code })) }));
   if (cases.some((item) => !item.passed) || report.unhandled_errors !== 0 || report.extension_load_errors !== 0) process.exitCode = 1;
 } finally {
