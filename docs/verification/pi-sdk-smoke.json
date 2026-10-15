@@ -2,10 +2,10 @@
   "schema_version": 1,
   "verification_contract": "pi-sdk-behavior-v2",
   "sdk_versions": {
-    "@earendil-works/pi-agent-core": "1.1.0",
-    "@earendil-works/pi-ai": "1.1.0",
-    "@earendil-works/pi-coding-agent": "1.1.0",
-    "@earendil-works/pi-tui": "1.1.0"
+    "@earendil-works/pi-agent-core": "1.2.0",
+    "@earendil-works/pi-ai": "1.2.0",
+    "@earendil-works/pi-coding-agent": "1.2.0",
+    "@earendil-works/pi-tui": "1.2.0"
   },
   "platform": "win32",
   "model_inference": "none; real Pi RPC uses an ephemeral local deterministic OpenAI-compatible endpoint; Pi loader, extension lifecycle, and feature hooks are not mocked",
@@ -17,12 +17,12 @@
       "command": "npm run smoke:pi",
       "exit_code": 0,
       "passed": true,
-      "evidence": "{\"command\":\"node <installed Pi 1.1.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (load check)\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"spawn_error\":null,\"provider_requests\":0,\"rpc_records\":[{\"type\":\"extension_ui_request\",\"id\":\"684e90f4-ce3a-4547-b3f5-ec43f0c67fd2\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"},{\"type\":\"response\",\"command\":\"get_state\",\"success\":true,\"data\":{\"model\":{\"id\":\"short-links-smoke\",\"name\":\"Deterministic local smoke\",\"api\":\"openai-completions\",\"provider\":\"pi-short-links-smoke\",\"baseUrl\":\"http://127.0.0.1:53694/v1\",\"reasoning\":false,\"input\":[\"text\"],\"cost\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0},\"contextWindow\":4096,\"maxTokens\":256},\"thinkingLevel\":\"off\",\"isStreaming\":false,\"isCompacting\":false,\"steeringMode\":\"one-at-a-time\",\"followUpMode\":\"one-at-a-time\",\"sessionId\":\"01a12d7a-dffe-732a-bb2b-3263e8eebd71\",\"autoCompactionEnabled\":true,\"messageCount\":0,\"pendingMessageCount\":0}}],\"diagnostics\":[]}",
+      "evidence": "{\"command\":\"node <installed Pi 1.2.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (load check)\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"spawn_error\":null,\"provider_requests\":0,\"rpc_records\":[{\"type\":\"extension_ui_request\",\"id\":\"1a39dce3-4084-4a59-ba4a-d646afaa47d9\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"},{\"type\":\"response\",\"command\":\"get_state\",\"success\":true,\"data\":{\"model\":{\"id\":\"short-links-smoke\",\"name\":\"Deterministic local smoke\",\"api\":\"openai-completions\",\"provider\":\"pi-short-links-smoke\",\"baseUrl\":\"http://127.0.0.1:49974/v1\",\"reasoning\":false,\"input\":[\"text\"],\"cost\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0},\"contextWindow\":4096,\"maxTokens\":256},\"thinkingLevel\":\"off\",\"isStreaming\":false,\"isCompacting\":false,\"steeringMode\":\"one-at-a-time\",\"followUpMode\":\"one-at-a-time\",\"sessionId\":\"01a14146-8295-7606-b8f6-972be21ee73b\",\"autoCompactionEnabled\":true,\"messageCount\":0,\"pendingMessageCount\":0}}],\"diagnostics\":[]}",
       "assertions": [
         {
           "id": "extension_registered",
           "expected": "Actual Pi emits the pi-short-links OSC 8 status during session start",
-          "observed": "{\"type\":\"extension_ui_request\",\"id\":\"684e90f4-ce3a-4547-b3f5-ec43f0c67fd2\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"}",
+          "observed": "{\"type\":\"extension_ui_request\",\"id\":\"1a39dce3-4084-4a59-ba4a-d646afaa47d9\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"}",
           "passed": true
         }
       ]
@@ -32,7 +32,7 @@
       "command": "npm run smoke:pi",
       "exit_code": 0,
       "passed": true,
-      "evidence": "{\"command\":\"node <installed Pi 1.1.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (malformed-input check)\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"spawn_error\":null,\"provider_requests\":0,\"rpc_records\":[{\"type\":\"extension_ui_request\",\"id\":\"d6087215-cdbd-4c8c-a842-c02ab28619ee\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"},{\"type\":\"response\",\"command\":\"parse\",\"success\":false,\"error\":\"Failed to parse command: Unexpected token 'o', \\\"not-json\\\" is not valid JSON\"}],\"diagnostics\":[]}",
+      "evidence": "{\"command\":\"node <installed Pi 1.2.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (malformed-input check)\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"spawn_error\":null,\"provider_requests\":0,\"rpc_records\":[{\"type\":\"extension_ui_request\",\"id\":\"4352c812-0420-44bc-892d-af31a8f7f536\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"},{\"type\":\"response\",\"command\":\"parse\",\"success\":false,\"error\":\"Failed to parse command: Unexpected token 'o', \\\"not-json\\\" is not valid JSON\"}],\"diagnostics\":[]}",
       "assertions": [
         {
           "id": "handled_error",
@@ -47,7 +47,7 @@
       "command": "npm run smoke:pi",
       "exit_code": 0,
       "passed": true,
-      "evidence": "{\"command\":\"node <installed Pi 1.1.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (feature check)\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"spawn_error\":null,\"provider_requests\":1,\"rpc_records\":[{\"type\":\"extension_ui_request\",\"id\":\"dc75c53b-95d1-42d6-9899-6b5f2d8655b4\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"},{\"id\":\"happy-prompt\",\"type\":\"response\",\"command\":\"prompt\",\"success\":true,\"data\":{\"disposition\":\"started\"}},{\"type\":\"message_end\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"Long URL: [example.com/…inal/columns](https://example.com/a/very/long/path/that/should/be/rewritten/without/wrapping/over/terminal/columns)\\nLong path: [/alpha/…/file.ts](file:///C:/alpha/beta/gamma/delta/epsilon/zeta/eta/theta/iota/kappa/lambda/mu/nu/file.ts)\"}],\"api\":\"openai-completions\",\"provider\":\"pi-short-links-smoke\",\"model\":\"short-links-smoke\",\"usage\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0,\"totalTokens\":0,\"cost\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0,\"total\":0}},\"stopReason\":\"stop\",\"timestamp\":1791764390368,\"responseId\":\"pi-short-links-smoke\",\"rawStopReason\":\"stop\",\"durationMs\":19,\"thinkingLevel\":\"off\"}},{\"type\":\"agent_settled\",\"aborted\":false}],\"diagnostics\":[]}",
+      "evidence": "{\"command\":\"node <installed Pi 1.2.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (feature check)\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"spawn_error\":null,\"provider_requests\":1,\"rpc_records\":[{\"type\":\"extension_ui_request\",\"id\":\"2d094d23-bb18-497d-aac1-4f16ca0dcde7\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"},{\"id\":\"happy-prompt\",\"type\":\"response\",\"command\":\"prompt\",\"success\":true,\"data\":{\"disposition\":\"started\"}},{\"type\":\"message_end\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"Long URL: [example.com/…inal/columns](https://example.com/a/very/long/path/that/should/be/rewritten/without/wrapping/over/terminal/columns)\\nLong path: [/alpha/…/file.ts](file:///C:/alpha/beta/gamma/delta/epsilon/zeta/eta/theta/iota/kappa/lambda/mu/nu/file.ts)\"}],\"api\":\"openai-completions\",\"provider\":\"pi-short-links-smoke\",\"model\":\"short-links-smoke\",\"usage\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0,\"totalTokens\":0,\"cost\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0,\"total\":0}},\"stopReason\":\"stop\",\"timestamp\":1792096503136,\"responseId\":\"pi-short-links-smoke\",\"rawStopReason\":\"stop\",\"durationMs\":22,\"thinkingLevel\":\"off\"}},{\"type\":\"agent_settled\",\"aborted\":false}],\"diagnostics\":[]}",
       "assertions": [
         {
           "id": "feature_response",
@@ -62,12 +62,12 @@
       "command": "npm run smoke:pi",
       "exit_code": 0,
       "passed": true,
-      "evidence": "{\"first_process\":{\"command\":\"node <installed Pi 1.1.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (first reload host)\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"rpc_records\":[{\"type\":\"extension_ui_request\",\"id\":\"1eaf208d-ab14-4695-b833-5eb53d2f5282\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"},{\"type\":\"response\",\"command\":\"get_state\",\"success\":true,\"data\":{\"model\":{\"id\":\"short-links-smoke\",\"name\":\"Deterministic local smoke\",\"api\":\"openai-completions\",\"provider\":\"pi-short-links-smoke\",\"baseUrl\":\"http://127.0.0.1:53694/v1\",\"reasoning\":false,\"input\":[\"text\"],\"cost\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0},\"contextWindow\":4096,\"maxTokens\":256},\"thinkingLevel\":\"off\",\"isStreaming\":false,\"isCompacting\":false,\"steeringMode\":\"one-at-a-time\",\"followUpMode\":\"one-at-a-time\",\"sessionId\":\"01a12d7a-e2a4-75ab-8fee-705d7dfcddf0\",\"autoCompactionEnabled\":true,\"messageCount\":0,\"pendingMessageCount\":0}}]},\"second_process\":{\"command\":\"node <installed Pi 1.1.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (second reload host feature check)\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"spawn_error\":null,\"provider_requests\":1,\"rpc_records\":[{\"type\":\"extension_ui_request\",\"id\":\"a6f19a64-008f-4031-bfc3-690498c53ac2\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"},{\"id\":\"reload-prompt\",\"type\":\"response\",\"command\":\"prompt\",\"success\":true,\"data\":{\"disposition\":\"started\"}},{\"type\":\"message_end\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"Long URL: [example.com/…inal/columns](https://example.com/a/very/long/path/that/should/be/rewritten/without/wrapping/over/terminal/columns)\\nLong path: [/alpha/…/file.ts](file:///C:/alpha/beta/gamma/delta/epsilon/zeta/eta/theta/iota/kappa/lambda/mu/nu/file.ts)\"}],\"api\":\"openai-completions\",\"provider\":\"pi-short-links-smoke\",\"model\":\"short-links-smoke\",\"usage\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0,\"totalTokens\":0,\"cost\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0,\"total\":0}},\"stopReason\":\"stop\",\"timestamp\":1791764390832,\"responseId\":\"pi-short-links-smoke\",\"rawStopReason\":\"stop\",\"durationMs\":16,\"thinkingLevel\":\"off\"}},{\"type\":\"agent_settled\",\"aborted\":false}],\"diagnostics\":[]}}",
+      "evidence": "{\"first_process\":{\"command\":\"node <installed Pi 1.2.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (first reload host)\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"rpc_records\":[{\"type\":\"extension_ui_request\",\"id\":\"70da41c1-116b-428b-8a2b-d1a3a072e954\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"},{\"type\":\"response\",\"command\":\"get_state\",\"success\":true,\"data\":{\"model\":{\"id\":\"short-links-smoke\",\"name\":\"Deterministic local smoke\",\"api\":\"openai-completions\",\"provider\":\"pi-short-links-smoke\",\"baseUrl\":\"http://127.0.0.1:49974/v1\",\"reasoning\":false,\"input\":[\"text\"],\"cost\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0},\"contextWindow\":4096,\"maxTokens\":256},\"thinkingLevel\":\"off\",\"isStreaming\":false,\"isCompacting\":false,\"steeringMode\":\"one-at-a-time\",\"followUpMode\":\"one-at-a-time\",\"sessionId\":\"01a14146-8660-7748-ab8a-c6894897e6a1\",\"autoCompactionEnabled\":true,\"messageCount\":0,\"pendingMessageCount\":0}}]},\"second_process\":{\"command\":\"node <installed Pi 1.2.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (second reload host feature check)\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"spawn_error\":null,\"provider_requests\":1,\"rpc_records\":[{\"type\":\"extension_ui_request\",\"id\":\"ddab1306-4d79-4362-919a-600ce3869fc7\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"},{\"id\":\"reload-prompt\",\"type\":\"response\",\"command\":\"prompt\",\"success\":true,\"data\":{\"disposition\":\"started\"}},{\"type\":\"message_end\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"Long URL: [example.com/…inal/columns](https://example.com/a/very/long/path/that/should/be/rewritten/without/wrapping/over/terminal/columns)\\nLong path: [/alpha/…/file.ts](file:///C:/alpha/beta/gamma/delta/epsilon/zeta/eta/theta/iota/kappa/lambda/mu/nu/file.ts)\"}],\"api\":\"openai-completions\",\"provider\":\"pi-short-links-smoke\",\"model\":\"short-links-smoke\",\"usage\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0,\"totalTokens\":0,\"cost\":{\"input\":0,\"output\":0,\"cacheRead\":0,\"cacheWrite\":0,\"total\":0}},\"stopReason\":\"stop\",\"timestamp\":1792096503726,\"responseId\":\"pi-short-links-smoke\",\"rawStopReason\":\"stop\",\"durationMs\":22,\"thinkingLevel\":\"off\"}},{\"type\":\"agent_settled\",\"aborted\":false}],\"diagnostics\":[]}}",
       "assertions": [
         {
           "id": "reloaded_extension_registered",
           "expected": "The second actual Pi host emits the pi-short-links OSC 8 status",
-          "observed": "{\"type\":\"extension_ui_request\",\"id\":\"a6f19a64-008f-4031-bfc3-690498c53ac2\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"}",
+          "observed": "{\"type\":\"extension_ui_request\",\"id\":\"ddab1306-4d79-4362-919a-600ce3869fc7\",\"method\":\"setStatus\",\"statusKey\":\"pi-short-links\",\"statusText\":\"short-links: OSC 8 on\"}",
           "passed": true
         },
         {
@@ -86,15 +86,15 @@
     },
     {
       "name": "host_shell",
-      "command": "PowerShell (native Windows): local node + installed Pi 1.1.0 CLI --no-extensions --version",
+      "command": "PowerShell (native Windows): local node + installed Pi 1.2.0 CLI --no-extensions --version",
       "exit_code": 0,
       "passed": true,
-      "evidence": "{\"command\":\"PowerShell (native Windows): local node + installed Pi 1.1.0 CLI --no-extensions --version\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"output\":\"1.1.0\"}",
+      "evidence": "{\"command\":\"PowerShell (native Windows): local node + installed Pi 1.2.0 CLI --no-extensions --version\",\"exit_code\":0,\"signal\":null,\"process_exit_observed\":true,\"timed_out\":false,\"output\":\"1.2.0\"}",
       "assertions": [
         {
           "id": "native_shell_boundary",
           "expected": "The native host shell launches the locally pinned Pi CLI and returns exactly its version",
-          "observed": "{\"exit_code\":0,\"processExited\":true,\"output\":\"1.1.0\",\"expectedVersion\":\"1.1.0\"}",
+          "observed": "{\"exit_code\":0,\"processExited\":true,\"output\":\"1.2.0\",\"expectedVersion\":\"1.2.0\"}",
           "passed": true
         }
       ]

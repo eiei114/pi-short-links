@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 - 2026-10-16
+
+- Pin Pi SDK 1.2.0 for development checks and run an isolated real-host compatibility smoke in CI.
+
 ## Unreleased
 
 ### Changed

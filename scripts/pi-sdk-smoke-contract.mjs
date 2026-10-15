@@ -1,9 +1,9 @@
 export const VERIFICATION_CONTRACT = "pi-sdk-behavior-v2";
 export const SDK_VERSIONS = {
-  "@earendil-works/pi-agent-core": "1.1.0",
-  "@earendil-works/pi-ai": "1.1.0",
-  "@earendil-works/pi-coding-agent": "1.1.0",
-  "@earendil-works/pi-tui": "1.1.0",
+  "@earendil-works/pi-agent-core": "1.2.0",
+  "@earendil-works/pi-ai": "1.2.0",
+  "@earendil-works/pi-coding-agent": "1.2.0",
+  "@earendil-works/pi-tui": "1.2.0",
 };
 export const UNHANDLED_ERROR_PATTERN = /UnhandledPromiseRejection|uncaught exception|shutdown error/i;
 export const EXTENSION_LOAD_ERROR_PATTERN = /Failed to load extension|Error loading extension/i;
@@ -62,7 +62,7 @@ export function featureResponse(responses, providerRequests) {
 
 export function behaviorAssertions(name, {
   responses = [], fullOutput = "", exit_code = null, processExited = false,
-  timedOut = false, providerRequests = 0, expectedVersion = "1.1.0",
+  timedOut = false, providerRequests = 0, expectedVersion = "1.2.0",
 }) {
   const status = extensionStatus(responses);
   if (name === "extension_load") {
