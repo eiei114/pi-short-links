@@ -6,10 +6,6 @@
 
 ## Unreleased
 
-### Changed
-
-- Pin Pi SDK 1.1.0 for development checks and run an isolated real-host compatibility smoke in CI.
-
 ## 0.2.1 - 2026-09-27
 
 - chore: periodic patch bump after 7+ days without npm publish
