@@ -1,6 +1,6 @@
 {
   "name": "pi-short-links",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Shorten long URLs and file paths in Pi assistant output so OSC 8 / click targets fit the pane width.",
   "type": "module",
   "license": "MIT",
@@ -50,10 +50,10 @@
     "@earendil-works/pi-tui": "*"
   },
   "devDependencies": {
-    "@earendil-works/pi-agent-core": "1.1.0",
-    "@earendil-works/pi-ai": "1.1.0",
-    "@earendil-works/pi-coding-agent": "1.1.0",
-    "@earendil-works/pi-tui": "1.1.0",
+    "@earendil-works/pi-agent-core": "1.2.0",
+    "@earendil-works/pi-ai": "1.2.0",
+    "@earendil-works/pi-coding-agent": "1.2.0",
+    "@earendil-works/pi-tui": "1.2.0",
     "@types/node": "^26.0.0",
     "typescript": "^7.0.2"
   }

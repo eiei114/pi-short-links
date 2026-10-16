@@ -67,7 +67,7 @@ function runRpc(label, inputLine, shouldClose) {
   const args = [piCli, "--offline", "--no-session", "--no-tools", "--no-extensions", "--no-skills",
     "--no-context-files", "--no-prompt-templates", "--no-mcp", "-e", ".",
     "--provider", "pi-short-links-smoke", "--model", "short-links-smoke", "--mode", "rpc"];
-  const hostCommand = `node <installed Pi 1.1.0 CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (${label})`;
+  const hostCommand = `node <installed Pi ${piManifest.version} CLI> --offline --no-session --no-tools --no-extensions -e . --provider pi-short-links-smoke --model short-links-smoke --mode rpc (${label})`;
   return new Promise((resolveRun) => {
     const child = spawn(process.execPath, args, {
       cwd: root,
@@ -175,11 +175,11 @@ function runHostShell() {
     const quote = (value) => `'${value.replaceAll("'", "''")}'`;
     const shellLine = `& ${quote(process.execPath)} ${quote(piCli)} --no-extensions --version; exit $LASTEXITCODE`;
     args = ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", shellLine];
-    command = "PowerShell (native Windows): local node + installed Pi 1.1.0 CLI --no-extensions --version";
+    command = `PowerShell (native Windows): local node + installed Pi ${piManifest.version} CLI --no-extensions --version`;
   } else {
     executable = "/bin/sh";
     args = ["-c", '"$1" "$2" --no-extensions --version', "pi-host-shell", process.execPath, piCli];
-    command = "/bin/sh (native POSIX): local node + installed Pi 1.1.0 CLI --no-extensions --version";
+    command = `/bin/sh (native POSIX): local node + installed Pi ${piManifest.version} CLI --no-extensions --version`;
   }
   const result = spawnSync(executable, args, {
     cwd: root, env, encoding: "utf8", timeout: PROBE_TIMEOUT_MS, windowsHide: true,
