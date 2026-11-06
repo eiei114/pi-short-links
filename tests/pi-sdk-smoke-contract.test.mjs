@@ -1,15 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  behaviorAssertions, parseJsonLines, SMOKE_PATH, SMOKE_URL, VERIFICATION_CONTRACT,
+  behaviorAssertions, parseJsonLines, SDK_VERSIONS, SMOKE_PATH, SMOKE_URL, VERIFICATION_CONTRACT,
 } from "../scripts/pi-sdk-smoke-contract.mjs";
 
 const status = { type: "extension_ui_request", method: "setStatus", statusKey: "pi-short-links", statusText: "short-links: OSC 8 on" };
+const pinnedPiVersion = SDK_VERSIONS["@earendil-works/pi-coding-agent"];
 const assistant = { type: "message_end", message: { role: "assistant", content: [{ type: "text", text:
   `Long URL: [example.com/…columns](${SMOKE_URL})\nLong path: [/alpha/…/file.ts](file://${SMOKE_PATH})` }] } };
 const successfulHost = (responses = [status, assistant], overrides = {}) => ({
   responses, fullOutput: "", exit_code: 0, processExited: true, timedOut: false,
-  providerRequests: 1, expectedVersion: "1.2.0", ...overrides,
+  providerRequests: 1, expectedVersion: pinnedPiVersion, ...overrides,
 });
 
 test("behavior contract ID and JSONL parsing support LF/CRLF and ignore malformed lines", () => {
@@ -73,9 +74,9 @@ test("reload requires second-host registration, feature response, and clean shut
 });
 
 test("native shell must return exactly the pinned Pi CLI version", () => {
-  assert.equal(behaviorAssertions("host_shell", successfulHost([], { fullOutput: "1.2.0\r\n" }))[0].id, "native_shell_boundary");
-  assert.equal(behaviorAssertions("host_shell", successfulHost([], { fullOutput: "1.2.0\r\n" }))[0].passed, true);
-  for (const value of ["", "11.2.0", "1.2.0 extra", "1.0.0"]) {
+  assert.equal(behaviorAssertions("host_shell", successfulHost([], { fullOutput: `${pinnedPiVersion}\r\n` }))[0].id, "native_shell_boundary");
+  assert.equal(behaviorAssertions("host_shell", successfulHost([], { fullOutput: `${pinnedPiVersion}\r\n` }))[0].passed, true);
+  for (const value of ["", "mismatch", `${pinnedPiVersion} extra`]) {
     assert.equal(behaviorAssertions("host_shell", successfulHost([], { fullOutput: value }))[0].passed, false);
   }
 });
