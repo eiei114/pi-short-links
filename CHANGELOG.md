@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4 - 2026-11-07
+
+- Verify compatibility with Pi SDK 1.5.0.
+
 ## 0.2.3 - 2026-11-07
 
 - Align Pi SDK smoke checks with the exact development dependency pins so SDK upgrades keep passing compatibility validation.
