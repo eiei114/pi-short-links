@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.5 - 2026-11-18
+
+- Pin the development-time Pi SDK dependencies to 1.5.2.
+
 ## 0.2.4 - 2026-11-07
 
 - Verify compatibility with Pi SDK 1.5.0.
