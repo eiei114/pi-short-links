@@ -1,7 +1,7 @@
 import * as os from "node:os";
 import { pathToFileURL } from "node:url";
 
-const URL_RE = /https?:\/\/[^\s<>\[\]()"`']+/g;
+const URL_RE = /https?:\/\/[^\s<>\[\]"`']+/g;
 const ABS_PATH_RE = /(?:^|[\s`"'(])((?:\/|~\/)[^\s<>\[\]()"`']+)/g;
 const MD_LINK_RE = /\[[^\]]*\]\([^)]+\)/g;
 
@@ -35,6 +35,42 @@ function stripTrailingPunctuation(value: string): { core: string; trailing: stri
 		end -= 1;
 	}
 	return { core: value.slice(0, end), trailing: value.slice(end) };
+}
+
+/**
+ * Split a URL match into its href and prose tail. Balanced parentheses belong
+ * to the URL; only closing parens in excess of opening ones are prose punctuation.
+ */
+function splitUrlTrailing(raw: string): { core: string; trailing: string } {
+	// Separate punctuation first so a prose ')' immediately before it is still
+	// visible as an unmatched closing delimiter (for example, "url). ok").
+	let punctuationStart = raw.length;
+	while (
+		punctuationStart > 0 &&
+		/[.,;:!?\]}'"]/.test(raw[punctuationStart - 1]!)
+	) {
+		punctuationStart -= 1;
+	}
+	const punctuation = raw.slice(punctuationStart);
+	const candidate = raw.slice(0, punctuationStart);
+
+	let opens = 0;
+	let closes = 0;
+	for (const char of candidate) {
+		if (char === "(") opens += 1;
+		else if (char === ")") closes += 1;
+	}
+
+	let end = candidate.length;
+	while (closes > opens && end > 0 && candidate[end - 1] === ")") {
+		end -= 1;
+		closes -= 1;
+	}
+
+	return {
+		core: candidate.slice(0, end),
+		trailing: candidate.slice(end) + punctuation,
+	};
 }
 
 export function formatUrlLabel(url: string, maxWidth: number): string {
@@ -129,7 +165,7 @@ function rewritePlainSegment(segment: string, options: ShortenOptions): string {
 	let text = protectedMd.text;
 
 	text = text.replace(URL_RE, (raw) => {
-		const { core, trailing } = stripTrailingPunctuation(raw);
+		const { core, trailing } = splitUrlTrailing(raw);
 		if (core.length <= maxWidth) return raw;
 		const label = formatUrlLabel(core, maxWidth);
 		return `[${label}](${core})${trailing}`;
