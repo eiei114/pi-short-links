@@ -114,3 +114,15 @@ test("shortenAssistantText treats an unmatched trailing ')' as prose", () => {
 		`see [example.com/…rtainly/long](${url})) ok`,
 	);
 });
+
+test("shortenAssistantText keeps a prose ')' outside the link before punctuation", () => {
+	const url = "https://example.com/a/very/long/path/that/is/certainly/long";
+	const out = shortenAssistantText(`see (${url}). ok`, {
+		maxWidth: 40,
+		homeDir: "/Users/demo",
+	});
+	assert.equal(
+		out,
+		`see ([example.com/…rtainly/long](${url})). ok`,
+	);
+});
