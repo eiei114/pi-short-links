@@ -2,7 +2,7 @@ import * as os from "node:os";
 import { pathToFileURL } from "node:url";
 
 const URL_RE = /https?:\/\/[^\s<>\[\]"`']+/g;
-const ABS_PATH_RE = /(?:^|[\s`"'(])((?:\/|~\/)[^\s<>\[\]()"`']+)/g;
+const ABS_PATH_RE = /(?:^|[\s`"'(])((?:[A-Za-z]:[\\/]|\/|~\/)[^\s<>\[\]()"`']+)/g;
 const MD_LINK_RE = /\[[^\]]*\]\([^)]+\)/g;
 
 export type ShortenOptions = {
@@ -98,16 +98,26 @@ export function formatPathLabel(
 	maxWidth: number,
 	homeDir: string = os.homedir(),
 ): string {
-	let display = rawPath;
-	if (rawPath.startsWith(homeDir)) {
-		display = `~${rawPath.slice(homeDir.length)}`;
+	const normalizedPath = rawPath.replaceAll("\\", "/");
+	const normalizedHome = homeDir.replaceAll("\\", "/");
+	let display = normalizedPath;
+	if (normalizedPath.startsWith(normalizedHome)) {
+		display = `~${normalizedPath.slice(normalizedHome.length)}`;
 	}
 
 	if (display.length <= maxWidth) return display;
 
 	const isHome = display.startsWith("~/");
 	const isAbs = display.startsWith("/");
-	const body = isHome ? display.slice(2) : isAbs ? display.slice(1) : display;
+	const drive = display.match(/^([A-Za-z]:)\//)?.[1];
+	const isDriveAbs = drive !== undefined;
+	const body = isHome
+		? display.slice(2)
+		: isAbs
+			? display.slice(1)
+			: isDriveAbs
+				? display.slice(3)
+				: display;
 	const parts = body.split("/").filter(Boolean);
 	const file = parts.at(-1) ?? body;
 	const first = parts[0];
@@ -121,6 +131,10 @@ export function formatPathLabel(
 		candidate = `/${first}/…/${file}`;
 	} else if (isAbs) {
 		candidate = `/…/${file}`;
+	} else if (isDriveAbs && first && first !== file) {
+		candidate = `${drive}/${first}/…/${file}`;
+	} else if (isDriveAbs) {
+		candidate = `${drive}/…/${file}`;
 	} else {
 		candidate = `…/${file}`;
 	}
@@ -137,7 +151,10 @@ function toFileHref(rawPath: string, homeDir: string, cwd?: string): string {
 	} else if (!rawPath.startsWith("/") && cwd) {
 		absolute = `${cwd.replace(/\/+$/, "")}/${rawPath}`;
 	}
-	return pathToFileURL(absolute).href;
+	const isWindowsDrivePath = /^[A-Za-z]:[\\/]/.test(absolute);
+	return pathToFileURL(absolute, {
+		windows: isWindowsDrivePath || process.platform === "win32",
+	}).href;
 }
 
 function protectMatches(text: string, pattern: RegExp): {

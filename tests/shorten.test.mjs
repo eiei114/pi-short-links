@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import path from "node:path";
 import test from "node:test";
 import {
 	formatPathLabel,
@@ -70,6 +71,67 @@ test("shortenAssistantText rewrites long absolute paths", () => {
 		homeDir: home,
 	});
 	assert.match(out, /\[~\/IMspace\/…\/file\.ts\]\(file:\/\//);
+});
+
+test("shortenAssistantText rewrites long Windows home paths with either separator", () => {
+	const home = path.win32.join("C:\\", "Users", "demo");
+	const windowsPath = path.win32.join(
+		home,
+		"IMspace",
+		"obsidian-note",
+		"4_Project",
+		"Some",
+		"Deep",
+		"Folder",
+		"file.ts",
+	);
+	const expected =
+		"open [~/IMspace/…/file.ts](file:///C:/Users/demo/IMspace/obsidian-note/4_Project/Some/Deep/Folder/file.ts) ok";
+
+	for (const inputPath of [windowsPath, windowsPath.replaceAll("\\", "/")]) {
+		assert.equal(
+			shortenAssistantText(`open ${inputPath} ok`, {
+				maxWidth: 40,
+				homeDir: home,
+			}),
+			expected,
+		);
+	}
+});
+
+test("shortenAssistantText preserves the drive on long Windows paths outside home", () => {
+	const windowsPath = path.win32.join(
+		"D:\\",
+		"work",
+		"some",
+		"deep",
+		"folder",
+		"file.ts",
+	);
+	const expected =
+		"open [D:/work/…/file.ts](file:///D:/work/some/deep/folder/file.ts) ok";
+
+	for (const inputPath of [windowsPath, windowsPath.replaceAll("\\", "/")]) {
+		assert.equal(
+			shortenAssistantText(`open ${inputPath} ok`, {
+				maxWidth: 24,
+				homeDir: path.win32.join("C:\\", "Users", "demo"),
+			}),
+			expected,
+		);
+	}
+});
+
+test("shortenAssistantText leaves short Windows paths unchanged", () => {
+	for (const pathText of ["C:\\Users\\demo\\a.ts", "C:/Users/demo/a.ts"]) {
+		assert.equal(
+			shortenAssistantText(`open ${pathText} ok`, {
+				maxWidth: 40,
+				homeDir: path.win32.join("C:\\", "Users", "demo"),
+			}),
+			`open ${pathText} ok`,
+		);
+	}
 });
 
 test("shortenAssistantText keeps balanced parentheses in the URL href and label", () => {
