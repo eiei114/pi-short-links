@@ -98,9 +98,10 @@ export function formatPathLabel(
 	maxWidth: number,
 	homeDir: string = os.homedir(),
 ): string {
-	const normalizedPath = rawPath.replaceAll("\\", "/");
-	const normalizedHome = homeDir.replaceAll("\\", "/");
-	const isWindowsHome = /^[A-Za-z]:\//.test(normalizedHome);
+	const isWindowsPath = /^[A-Za-z]:[\\/]/.test(rawPath);
+	const normalizedPath = isWindowsPath ? rawPath.replaceAll("\\", "/") : rawPath;
+	const isWindowsHome = /^[A-Za-z]:[\\/]/.test(homeDir);
+	const normalizedHome = isWindowsHome ? homeDir.replaceAll("\\", "/") : homeDir;
 	let display = normalizedPath;
 	if (isWindowsHome) {
 		const comparablePath = normalizedPath.toLowerCase();

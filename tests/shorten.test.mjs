@@ -73,6 +73,18 @@ test("shortenAssistantText rewrites long absolute paths", () => {
 	assert.match(out, /\[~\/IMspace\/…\/file\.ts\]\(file:\/\//);
 });
 
+test("shortenAssistantText preserves literal backslashes in POSIX path segments", () => {
+	const posixPath = "/a\\b/some/deep/folder/file.ts";
+	const expectedLabel = "/a\\b/…/file.ts";
+	const out = shortenAssistantText(`open ${posixPath} ok`, {
+		maxWidth: 24,
+		homeDir: "/Users/demo",
+	});
+	assert.equal(formatPathLabel(posixPath, 24, "/Users/demo"), expectedLabel);
+	assert.ok(out.startsWith(`open [${expectedLabel}](`));
+	assert.ok(out.endsWith(") ok"));
+});
+
 test("shortenAssistantText rewrites long Windows home paths with either separator", () => {
 	const home = path.win32.join("C:\\", "Users", "demo");
 	const windowsPath = path.win32.join(
