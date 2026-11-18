@@ -71,3 +71,46 @@ test("shortenAssistantText rewrites long absolute paths", () => {
 	});
 	assert.match(out, /\[~\/IMspace\/…\/file\.ts\]\(file:\/\//);
 });
+
+test("shortenAssistantText keeps balanced parentheses in the URL href and label", () => {
+	const options = { maxWidth: 40, homeDir: "/Users/demo" };
+
+	const wiki = "https://en.wikipedia.org/wiki/International_Space_Station_(ISS)";
+	const wikiOut = shortenAssistantText(`see ${wiki} ok`, options);
+	assert.equal(
+		wikiOut,
+		`see [en.wikipedia.org/…tation_(ISS)](${wiki}) ok`,
+	);
+
+	const mdn =
+		"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array_(...)";
+	const mdnOut = shortenAssistantText(`see ${mdn} ok`, options);
+	assert.equal(
+		mdnOut,
+		`see [developer.mozilla.org/…Array_(...)](${mdn}) ok`,
+	);
+});
+
+test("shortenAssistantText leaves a prose-wrapping ')' outside the href", () => {
+	const url = "https://example.com/a/very/long/path/that/is/certainly/long";
+	const out = shortenAssistantText(`see (${url}) ok`, {
+		maxWidth: 40,
+		homeDir: "/Users/demo",
+	});
+	assert.equal(
+		out,
+		`see ([example.com/…rtainly/long](${url})) ok`,
+	);
+});
+
+test("shortenAssistantText treats an unmatched trailing ')' as prose", () => {
+	const url = "https://example.com/a/very/long/path/that/is/certainly/long";
+	const out = shortenAssistantText(`see ${url}) ok`, {
+		maxWidth: 40,
+		homeDir: "/Users/demo",
+	});
+	assert.equal(
+		out,
+		`see [example.com/…rtainly/long](${url})) ok`,
+	);
+});

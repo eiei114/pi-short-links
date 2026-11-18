@@ -1,7 +1,7 @@
 import * as os from "node:os";
 import { pathToFileURL } from "node:url";
 
-const URL_RE = /https?:\/\/[^\s<>\[\]()"`']+/g;
+const URL_RE = /https?:\/\/[^\s<>\[\]"`']+/g;
 const ABS_PATH_RE = /(?:^|[\s`"'(])((?:\/|~\/)[^\s<>\[\]()"`']+)/g;
 const MD_LINK_RE = /\[[^\]]*\]\([^)]+\)/g;
 
@@ -35,6 +35,38 @@ function stripTrailingPunctuation(value: string): { core: string; trailing: stri
 		end -= 1;
 	}
 	return { core: value.slice(0, end), trailing: value.slice(end) };
+}
+
+/**
+ * Split a URL match into its href and prose tail. Balanced parentheses belong
+ * to the URL; only closing parens in excess of opening ones are prose punctuation.
+ */
+function splitUrlTrailing(raw: string): { core: string; trailing: string } {
+	let opens = 0;
+	let closes = 0;
+	for (const char of raw) {
+		if (char === "(") opens += 1;
+		else if (char === ")") closes += 1;
+	}
+
+	let end = raw.length;
+	while (closes > opens && end > 0 && raw[end - 1] === ")") {
+		end -= 1;
+		closes -= 1;
+	}
+	const balanced = raw.slice(0, end);
+	const unbalancedTail = raw.slice(end);
+
+	// Strip ordinary trailing punctuation, but keep balanced closing parens in the href.
+	let coreEnd = balanced.length;
+	while (coreEnd > 0 && /[.,;:!?\]}'"]/.test(balanced[coreEnd - 1]!)) {
+		coreEnd -= 1;
+	}
+
+	return {
+		core: balanced.slice(0, coreEnd),
+		trailing: balanced.slice(coreEnd) + unbalancedTail,
+	};
 }
 
 export function formatUrlLabel(url: string, maxWidth: number): string {
@@ -129,7 +161,7 @@ function rewritePlainSegment(segment: string, options: ShortenOptions): string {
 	let text = protectedMd.text;
 
 	text = text.replace(URL_RE, (raw) => {
-		const { core, trailing } = stripTrailingPunctuation(raw);
+		const { core, trailing } = splitUrlTrailing(raw);
 		if (core.length <= maxWidth) return raw;
 		const label = formatUrlLabel(core, maxWidth);
 		return `[${label}](${core})${trailing}`;
