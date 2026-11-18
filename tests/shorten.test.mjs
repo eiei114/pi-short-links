@@ -122,6 +122,32 @@ test("shortenAssistantText preserves the drive on long Windows paths outside hom
 	}
 });
 
+test("shortenAssistantText does not treat a Windows home prefix as a home path", () => {
+	const home = path.win32.join("C:\\", "Users", "demo");
+	const windowsPath = path.win32.join(
+		home + "-extra",
+		"IMspace",
+		"obsidian-note",
+		"4_Project",
+		"Some",
+		"Deep",
+		"Folder",
+		"file.ts",
+	);
+	const expected =
+		"open [C:/Users/…/file.ts](file:///C:/Users/demo-extra/IMspace/obsidian-note/4_Project/Some/Deep/Folder/file.ts) ok";
+
+	for (const inputPath of [windowsPath, windowsPath.replaceAll("\\", "/")]) {
+		assert.equal(
+			shortenAssistantText(`open ${inputPath} ok`, {
+				maxWidth: 40,
+				homeDir: home,
+			}),
+			expected,
+		);
+	}
+});
+
 test("shortenAssistantText leaves short Windows paths unchanged", () => {
 	for (const pathText of ["C:\\Users\\demo\\a.ts", "C:/Users/demo/a.ts"]) {
 		assert.equal(

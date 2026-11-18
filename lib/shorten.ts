@@ -100,8 +100,17 @@ export function formatPathLabel(
 ): string {
 	const normalizedPath = rawPath.replaceAll("\\", "/");
 	const normalizedHome = homeDir.replaceAll("\\", "/");
+	const isWindowsHome = /^[A-Za-z]:\//.test(normalizedHome);
 	let display = normalizedPath;
-	if (normalizedPath.startsWith(normalizedHome)) {
+	if (isWindowsHome) {
+		const comparablePath = normalizedPath.toLowerCase();
+		const comparableHome = normalizedHome.toLowerCase();
+		const homePrefix = comparableHome.endsWith("/") ? comparableHome : `${comparableHome}/`;
+		if (comparablePath === comparableHome || comparablePath.startsWith(homePrefix)) {
+			const relativePath = normalizedPath.slice(normalizedHome.length).replace(/^\/+/, "");
+			display = relativePath ? `~/${relativePath}` : "~";
+		}
+	} else if (normalizedPath.startsWith(normalizedHome)) {
 		display = `~${normalizedPath.slice(normalizedHome.length)}`;
 	}
 
