@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import test from "node:test";
+import { pathToFileURL } from "node:url";
 import {
 	formatPathLabel,
 	formatUrlLabel,
@@ -158,6 +159,60 @@ test("shortenAssistantText does not treat a Windows home prefix as a home path",
 			expected,
 		);
 	}
+});
+
+test("shortenAssistantText does not prefix absolute Windows drive paths with cwd", () => {
+	const out = shortenAssistantText("open D:/work/some/deep/folder/file.ts ok", {
+		maxWidth: 24,
+		homeDir: "/Users/demo",
+		cwd: "/repo",
+	});
+	assert.equal(
+		out,
+		"open [D:/work/…/file.ts](file:///D:/work/some/deep/folder/file.ts) ok",
+	);
+	assert.doesNotMatch(out, /repo/);
+});
+
+test("shortenAssistantText links quoted paths with spaces as a whole", () => {
+	const options = { maxWidth: 24, homeDir: "/Users/demo", cwd: "/repo" };
+	assert.equal(
+		shortenAssistantText('open "D:/work/My Files/deep/folder/file.ts" ok', options),
+		'open "[D:/work/…/file.ts](file:///D:/work/My%20Files/deep/folder/file.ts)" ok',
+	);
+	assert.equal(
+		shortenAssistantText("open '/srv/My Files/deep/folder/file.ts'. ok", options),
+		`open '[/srv/…/file.ts](${pathToFileURL("/srv/My Files/deep/folder/file.ts").href})'. ok`,
+	);
+	assert.equal(
+		shortenAssistantText('open "C:/Program Files (x86)/deep/folder/app.exe" ok', options),
+		'open "[C:/Program Files (x86)/…](file:///C:/Program%20Files%20%28x86%29/deep/folder/app.exe)" ok',
+	);
+});
+
+test("shortenAssistantText never partially links a quoted path with spaces", () => {
+	const options = { maxWidth: 24, homeDir: "/Users/demo" };
+	// The "[" in the second word makes the quoted path unlinkable as a whole.
+	const input = 'open "D:/work/some/deep/folder/My [draft] file.ts" ok';
+	assert.equal(shortenAssistantText(input, options), input);
+});
+
+test("shortenAssistantText does not link paths inside http URLs", () => {
+	const longUrl = "https://example.com/show(D:/work/some/deep/folder/file.ts)";
+	const longOut = shortenAssistantText(`see ${longUrl} ok`, {
+		maxWidth: 40,
+		homeDir: "/Users/demo",
+		cwd: "/repo",
+	});
+	assert.match(longOut, /^see \[[^\]]+\]\(https:\/\/example\.com\/show\(D:\/work\/some\/deep\/folder\/file\.ts\)\) ok$/);
+	assert.doesNotMatch(longOut, /file:\/\//);
+
+	const nested = shortenAssistantText(`see ${longUrl} ok`, {
+		maxWidth: 24,
+		homeDir: "/Users/demo",
+	});
+	assert.doesNotMatch(nested, /file:\/\//);
+	assert.ok(nested.includes(`(${longUrl})`));
 });
 
 test("shortenAssistantText leaves short Windows paths unchanged", () => {

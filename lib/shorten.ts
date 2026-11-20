@@ -4,6 +4,12 @@ import { pathToFileURL } from "node:url";
 const URL_RE = /https?:\/\/[^\s<>\[\]"`']+/g;
 const ABS_PATH_RE = /(?:^|[\s`"'(])((?:[A-Za-z]:[\\/]|\/|~\/)[^\s<>\[\]()"`']+)/g;
 const MD_LINK_RE = /\[[^\]]*\]\([^)]+\)/g;
+// A quoted absolute path that contains whitespace (for example
+// "C:/Program Files/app/file.ts"). Linked as a whole or not at all.
+const QUOTED_SPACED_PATH_RE =
+	/(["'`])((?:[A-Za-z]:[\\/]|\/|~\/)[^\r\n"'`<>\[\]]*\s[^\r\n"'`<>\[\]]*)\1/g;
+const WINDOWS_DRIVE_PATH_RE = /^[A-Za-z]:[\\/]/;
+const SLOT_RE = /\u0000MD(\d+)\u0000/g;
 
 export type ShortenOptions = {
 	maxWidth: number;
@@ -158,13 +164,16 @@ function toFileHref(rawPath: string, homeDir: string, cwd?: string): string {
 	let absolute = rawPath;
 	if (rawPath.startsWith("~/")) {
 		absolute = `${homeDir}${rawPath.slice(1)}`;
-	} else if (!rawPath.startsWith("/") && cwd) {
+	} else if (!rawPath.startsWith("/") && !WINDOWS_DRIVE_PATH_RE.test(rawPath) && cwd) {
 		absolute = `${cwd.replace(/\/+$/, "")}/${rawPath}`;
 	}
-	const isWindowsDrivePath = /^[A-Za-z]:[\\/]/.test(absolute);
+	const isWindowsDrivePath = WINDOWS_DRIVE_PATH_RE.test(absolute);
+	// Encode parentheses so the href stays a single markdown link destination.
 	return pathToFileURL(absolute, {
 		windows: isWindowsDrivePath || process.platform === "win32",
-	}).href;
+	})
+		.href.replaceAll("(", "%28")
+		.replaceAll(")", "%29");
 }
 
 function protectMatches(text: string, pattern: RegExp): {
@@ -172,16 +181,27 @@ function protectMatches(text: string, pattern: RegExp): {
 	slots: string[];
 } {
 	const slots: string[] = [];
-	const next = text.replace(pattern, (match) => {
-		const idx = slots.length;
-		slots.push(match);
-		return `\u0000MD${idx}\u0000`;
-	});
+	const next = text.replace(pattern, (match) => addSlot(slots, match));
 	return { text: next, slots };
 }
 
+function addSlot(slots: string[], value: string): string {
+	const idx = slots.length;
+	slots.push(value);
+	return `\u0000MD${idx}\u0000`;
+}
+
 function restoreSlots(text: string, slots: string[]): string {
-	return text.replace(/\u0000MD(\d+)\u0000/g, (_m, idx) => slots[Number(idx)] ?? "");
+	let restored = text;
+	// A slot may contain an earlier slot's placeholder; restore until none remain.
+	for (let pass = 0; pass <= slots.length && restored.includes("\u0000MD"); pass += 1) {
+		restored = restored.replace(SLOT_RE, (_m, idx) => slots[Number(idx)] ?? "");
+	}
+	return restored;
+}
+
+function isQuote(value: string): boolean {
+	return value === '"' || value === "'" || value === "`";
 }
 
 function rewritePlainSegment(segment: string, options: ShortenOptions): string {
@@ -189,17 +209,38 @@ function rewritePlainSegment(segment: string, options: ShortenOptions): string {
 	const maxWidth = options.maxWidth;
 
 	const protectedMd = protectMatches(segment, MD_LINK_RE);
+	const slots = protectedMd.slots;
 	let text = protectedMd.text;
 
+	// URLs (rewritten or not) are protected so the path passes never link a
+	// path-looking fragment inside an http(s) URL.
 	text = text.replace(URL_RE, (raw) => {
 		const { core, trailing } = splitUrlTrailing(raw);
-		if (core.length <= maxWidth) return raw;
+		if (core.length <= maxWidth) return addSlot(slots, raw);
 		const label = formatUrlLabel(core, maxWidth);
-		return `[${label}](${core})${trailing}`;
+		return `${addSlot(slots, `[${label}](${core})`)}${trailing}`;
 	});
 
-	text = text.replace(ABS_PATH_RE, (full, pathPart: string) => {
+	// Quoted paths containing spaces are linked as a whole before the
+	// whitespace-delimited pass below could link only their first word.
+	text = text.replace(QUOTED_SPACED_PATH_RE, (full, quote: string, pathPart: string) => {
+		const { core, trailing } = stripTrailingPunctuation(pathPart);
+		if (core.length <= maxWidth || /\s$/.test(core)) return full;
+		const label = formatPathLabel(core, maxWidth, homeDir);
+		const href = toFileHref(core, homeDir, options.cwd);
+		return `${quote}${addSlot(slots, `[${label}](${href})`)}${trailing}${quote}`;
+	});
+
+	text = text.replace(ABS_PATH_RE, (full, pathPart: string, offset: number, whole: string) => {
 		const prefix = full.slice(0, full.length - pathPart.length);
+		// A quoted path that continues past whitespace could not be linked as a
+		// whole; leave it unchanged rather than linking only its first part.
+		const end = offset + full.length;
+		if (isQuote(prefix) && /^[ \t]/.test(whole.slice(end, end + 1))) {
+			const lineEnd = whole.indexOf("\n", end);
+			const rest = whole.slice(end, lineEnd === -1 ? undefined : lineEnd);
+			if (rest.includes(prefix)) return full;
+		}
 		const { core, trailing } = stripTrailingPunctuation(pathPart);
 		if (core.length <= maxWidth) return full;
 		// Skip URL-looking leftovers.
@@ -209,7 +250,7 @@ function rewritePlainSegment(segment: string, options: ShortenOptions): string {
 		return `${prefix}[${label}](${href})${trailing}`;
 	});
 
-	return restoreSlots(text, protectedMd.slots);
+	return restoreSlots(text, slots);
 }
 
 /**
