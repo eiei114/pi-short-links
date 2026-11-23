@@ -59,13 +59,37 @@ pi -e npm:pi-short-links
 
 ## Quick start
 
-Try the local checkout without permanently installing it:
+From the local checkout, try the extension without permanently installing it.
+In a POSIX shell:
 
 ```bash
 FORCE_HYPERLINK=1 pi -e .
 ```
 
-Then send a message containing a long URL or absolute file path and confirm it renders as a short clickable link.
+In PowerShell:
+
+```powershell
+$previousForceHyperlink = $env:FORCE_HYPERLINK
+try {
+    $env:FORCE_HYPERLINK = '1'
+    pi -e .
+} finally {
+    $env:FORCE_HYPERLINK = $previousForceHyperlink
+}
+```
+
+When Pi exits, the PowerShell example restores the previous value (or unsets it
+if it was originally unset). Your terminal still needs to support OSC 8 hyperlinks.
+
+Ask Pi to echo a long URL or absolute file path as plain text, without a code
+fence. For example, ask it to echo this Windows path:
+
+```text
+C:\Workspaces\example-project\artifacts\integration-tests\windows\nightly-build\2026-11-23\results\diagnostics\archived-reports\summary.json
+```
+
+Look for the shortened, clickable link in Pi's assistant output, not in the
+input line. Paths inside fenced code blocks are left untouched.
 
 ## Package contents
 
