@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.6 - 2026-11-24
+
+- Pin the development-time Pi SDK dependencies to 1.6.0.
+
 ## 0.2.5 - 2026-11-18
 
 - Pin the development-time Pi SDK dependencies to 1.5.2.
