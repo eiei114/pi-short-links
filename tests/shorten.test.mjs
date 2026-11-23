@@ -37,6 +37,20 @@ test("formatPathLabel uses home + middle ellipsis", () => {
 	assert.equal(label, "~/IMspace/…/file.ts");
 });
 
+test("formatPathLabel abbreviates a POSIX home and its children, but not a sibling", () => {
+	const home = "/home/alex";
+	assert.equal(formatPathLabel(home, 80, home), "~");
+	assert.equal(formatPathLabel(`${home}/src/file.ts`, 80, home), "~/src/file.ts");
+	assert.equal(formatPathLabel("/home/alexandra/src/file.ts", 80, home), "/home/alexandra/src/file.ts");
+});
+
+test("formatPathLabel handles a trailing slash in the POSIX home fixture", () => {
+	const home = "/home/alex/";
+	assert.equal(formatPathLabel(`${home}src/file.ts`, 80, home), "~/src/file.ts");
+	assert.equal(formatPathLabel("/home/alex", 80, home), "~");
+	assert.equal(formatPathLabel(home, 80, home), "~");
+});
+
 test("shortenAssistantText rewrites long urls outside fences", () => {
 	const url =
 		"https://docs.google.com/document/d/1yotrdtXibZ_3RFW_N8FCCwvAa8vIa_sgPbRM8KlBKTg/edit";

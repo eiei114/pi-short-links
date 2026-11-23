@@ -117,8 +117,13 @@ export function formatPathLabel(
 			const relativePath = normalizedPath.slice(normalizedHome.length).replace(/^\/+/, "");
 			display = relativePath ? `~/${relativePath}` : "~";
 		}
-	} else if (normalizedPath.startsWith(normalizedHome)) {
-		display = `~${normalizedPath.slice(normalizedHome.length)}`;
+	} else if (normalizedHome.startsWith("/")) {
+		const home = normalizedHome.replace(/\/+$/, "") || "/";
+		const homePrefix = home === "/" ? home : `${home}/`;
+		if (normalizedPath === home || normalizedPath.startsWith(homePrefix)) {
+			const relativePath = normalizedPath.slice(home.length).replace(/^\/+/, "");
+			display = relativePath ? `~/${relativePath}` : "~";
+		}
 	}
 
 	if (display.length <= maxWidth) return display;
