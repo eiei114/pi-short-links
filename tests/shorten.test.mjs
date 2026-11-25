@@ -51,6 +51,25 @@ test("formatPathLabel handles a trailing slash in the POSIX home fixture", () =>
 	assert.equal(formatPathLabel(home, 80, home), "~");
 });
 
+test("formatPathLabel ignores trailing Windows home separators and compares case-insensitively", () => {
+	for (const home of ["C:/Users/Alex/", "C:\\Users\\Alex\\", "C:/Users/Alex//"]) {
+		assert.equal(formatPathLabel("c:\\users\\alex", 80, home), "~", home);
+		assert.equal(formatPathLabel("c:/users/alex/", 80, home), "~", home);
+		assert.equal(formatPathLabel("c:/users/alex/Src/File.ts", 80, home), "~/Src/File.ts", home);
+		assert.equal(formatPathLabel("c:\\users\\alexandra\\file.ts", 80, home), "c:/users/alexandra/file.ts", home);
+	}
+});
+
+test("formatPathLabel keeps a Windows drive-root home distinct from drive-relative paths", () => {
+	for (const home of ["C:/", "C:\\", "C://"]) {
+		assert.equal(formatPathLabel("c:\\", 80, home), "~", home);
+		assert.equal(formatPathLabel("c:\\Src\\File.ts", 80, home), "~/Src/File.ts", home);
+		assert.equal(formatPathLabel("c:", 80, home), "c:", home);
+		assert.equal(formatPathLabel("c:File.ts", 80, home), "c:File.ts", home);
+		assert.equal(formatPathLabel("D:\\Src\\File.ts", 80, home), "D:/Src/File.ts", home);
+	}
+});
+
 test("shortenAssistantText rewrites long urls outside fences", () => {
 	const url =
 		"https://docs.google.com/document/d/1yotrdtXibZ_3RFW_N8FCCwvAa8vIa_sgPbRM8KlBKTg/edit";
