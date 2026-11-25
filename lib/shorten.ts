@@ -110,11 +110,14 @@ export function formatPathLabel(
 	const normalizedHome = isWindowsHome ? homeDir.replaceAll("\\", "/") : homeDir;
 	let display = normalizedPath;
 	if (isWindowsHome) {
+		const trimmedHome = normalizedHome.replace(/\/+$/, "");
+		// A drive root must retain its slash: C:/ is absolute, but C: is not.
+		const home = trimmedHome.length === 2 ? `${trimmedHome}/` : trimmedHome;
 		const comparablePath = normalizedPath.toLowerCase();
-		const comparableHome = normalizedHome.toLowerCase();
+		const comparableHome = home.toLowerCase();
 		const homePrefix = comparableHome.endsWith("/") ? comparableHome : `${comparableHome}/`;
 		if (comparablePath === comparableHome || comparablePath.startsWith(homePrefix)) {
-			const relativePath = normalizedPath.slice(normalizedHome.length).replace(/^\/+/, "");
+			const relativePath = normalizedPath.slice(home.length).replace(/^\/+/, "");
 			display = relativePath ? `~/${relativePath}` : "~";
 		}
 	} else if (normalizedHome.startsWith("/")) {
